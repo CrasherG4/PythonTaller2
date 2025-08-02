@@ -18,7 +18,7 @@ if response.status_code == 200:
     # Uso BeautifulSoup para analizar el html de la página
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Busco la primera tabla con clase 'wikitable', que es la que contiene los datos
+    # Busco la primera tabla con clase wikitable, que es la que contiene los datos
     table = soup.find("table", {"class": "wikitable"})
 
     # Uso pandas para leer el contenido de la tabla directamente desde el html

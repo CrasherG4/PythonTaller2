@@ -18,6 +18,7 @@ df["Población"] = df["Población"].str.replace("\xa0", "", regex=False).str.rep
 
 # Convierto los valores a numéricos para poder analizarlos
 df["Población"] = pd.to_numeric(df["Población"], errors='coerce')
+df = df[df["País"].str.lower() != "mundo"]
 
 # Hago lo mismo para "Porcentaje_mundial": limpio símbolos y paso a número
 df["Porcentaje_mundial"] = df["Porcentaje_mundial"].str.replace("%", "", regex=False).str.replace(",", ".", regex=False)
@@ -36,6 +37,39 @@ st.metric("Promedio población por país (mil millones)", f"{promedio_poblacion:
 top_10 = df.sort_values(by="Población", ascending=False).head(10)
 st.subheader("Top 10 países por población")
 st.dataframe(top_10[["País", "Población"]])
+
+# Gráfico de barras interactivo con Streamlit
+st.subheader("Población por país")
+
+top_30 = df.sort_values(by="Población", ascending=False).head(30).set_index("País")
+st.bar_chart(top_30["Población"])
+
+# Gráfico de barras: Top 20 países más poblados
+st.subheader("Top 20 países por población")
+
+top_20 = df.sort_values(by="Población", ascending=False).head(20)
+
+fig_bar, ax_bar = plt.subplots(figsize=(10, 6))
+ax_bar.barh(top_20["País"], top_20["Población"], color="skyblue")
+ax_bar.invert_yaxis()  # País más poblado arriba
+ax_bar.set_xlabel("Población")
+ax_bar.set_title("Top 20 países por población")
+st.pyplot(fig_bar)
+
+# Gráfico de líneas: población acumulada ordenada por país
+st.subheader("Población acumulada por país")
+
+# Ordenamos los países por población
+ordenados = df.sort_values("Población", ascending=True).reset_index(drop=True)
+ordenados["Acumulado"] = ordenados["Población"].cumsum()
+
+fig_line, ax_line = plt.subplots(figsize=(10, 5))
+ax_line.plot(ordenados["País"], ordenados["Acumulado"], marker='o', linestyle='-')
+ax_line.set_xticks(range(0, len(ordenados), 5))
+ax_line.set_xticklabels(ordenados["País"].iloc[::5], rotation=45, ha='right')
+ax_line.set_ylabel("Población acumulada")
+ax_line.set_title("Población acumulada por país")
+st.pyplot(fig_line)
 
 # Creo un gráfico de pastel para visualizar la distribución entre los 10 países
 st.subheader("Distribución poblacional de los 10 países más poblados")

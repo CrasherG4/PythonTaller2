@@ -18,7 +18,7 @@ df.rename(columns={
     'Total mun- dial (%)': 'Porcentaje_mundial'
 }, inplace=True)
 
-# Limpio la columna de población: quito espacios extraños, normales y comas
+# Limpio la columna de población: quito espacios extraños o comas
 df["Población"] = df["Población"] \
     .str.replace("\xa0", "", regex=False) \
     .str.replace(" ", "", regex=False) \
